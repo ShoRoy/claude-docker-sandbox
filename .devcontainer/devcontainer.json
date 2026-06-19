@@ -1,0 +1,38 @@
+{
+  // claude-docker-sandbox — minimal hardened dev container.
+  // The Dockerfile decides WHAT is in the box; this file decides HOW it is run.
+  "name": "Claude Sandbox",
+  "build": { "dockerfile": "../Dockerfile", "context": ".." },
+  "workspaceFolder": "/workspace",
+
+  // Only what the agent should touch crosses the wall. Edit these for your project.
+  // Mark anything look-but-don't-touch as read-only with ,readonly.
+  "mounts": [
+    "source=${localWorkspaceFolder}/workspace,target=/workspace,type=bind",
+    "source=${localWorkspaceFolder}/config,target=/home/claudeuser,type=bind"
+  ],
+
+  "runArgs": [
+    // in-memory scratch, size-bounded, non-executable
+    "--tmpfs", "/tmp:rw,size=4g,mode=1777,noexec,nosuid,nodev",
+    "--tmpfs", "/run:rw,size=64m,mode=755,noexec,nosuid,nodev",
+    // the container starts non-root, so it holds no capabilities anyway;
+    // drop-ALL makes that explicit and clears the bounding set too.
+    "--cap-drop=ALL",
+    // a setuid binary can't be used to climb back to root mid-session
+    "--security-opt", "no-new-privileges"
+  ],
+
+  "remoteUser": "claudeuser",
+  "containerEnv": { "TMPDIR": "/tmp" },
+
+  // Auto-install the agent (and your editor tooling) on attach.
+  "customizations": {
+    "vscode": {
+      "extensions": ["anthropic.claude-code"]
+    }
+  }
+
+  // NOTE: the Docker socket is deliberately NOT mounted. Mounting
+  // /var/run/docker.sock is equivalent to root on the host. Don't.
+}

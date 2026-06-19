@@ -1,0 +1,11 @@
+# the bind-mount targets created by the user; not part of the starter
+/workspace/
+/config/
+/cache/
+# runtime audit log
+.audit.log
+# the project-local, personal override (never commit)
+.claude/settings.local.json
+# python bytecode
+__pycache__/
+*.pyc

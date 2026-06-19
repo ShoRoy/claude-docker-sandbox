@@ -1,0 +1,44 @@
+{
+  "//": "Example Claude Code permission rules for this project. EDIT the paths.",
+  "//1": "deny beats allow, so a sensitive file can be compilable (via make) yet unreadable by the agent.",
+  "//2": "This is an abridged illustration — a real deny list spells out more reader/writer/exfil commands.",
+  "permissions": {
+    "defaultMode": "default",
+    "disableBypassPermissionsMode": "disable",
+    "deny": [
+      "Read(/workspace/project/restricted/**)",
+      "Edit(/workspace/project/restricted/**)",
+      "Write(/workspace/project/restricted/**)",
+      "Read(/workspace/project/params/sensitive_values.conf)",
+      "Bash(cat /workspace/project/restricted/**)",
+      "Bash(less /workspace/project/restricted/**)",
+      "Bash(head /workspace/project/restricted/**)",
+      "Bash(tail /workspace/project/restricted/**)",
+      "Bash(grep * /workspace/project/restricted/**)",
+      "Bash(cp /workspace/project/restricted/** *)",
+      "Bash(tar * /workspace/project/restricted/**)",
+      "Bash(rsync * /workspace/project/restricted/**)",
+      "Bash(python3 * /workspace/project/restricted/**)",
+      "Bash(perl * /workspace/project/restricted/**)"
+    ],
+    "ask": [
+      "Bash(rm *)",
+      "Bash(curl *)",
+      "Bash(wget *)",
+      "Bash(git push *)"
+    ],
+    "allow": [
+      "Bash(make *)",
+      "Bash(cmake *)",
+      "Bash(mpiexec *)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/audit.py"
+      }
+    ]
+  }
+}
