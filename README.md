@@ -1,8 +1,9 @@
 # claude-docker-sandbox
 
 A small, sensibly-hardened **Docker dev container for running an AI coding agent
-(Claude Code) on WSL** — so it can edit your codebase freely but can't touch your
-host machine or read the files it has no business reading.
+(Claude Code)** — so it can edit your codebase freely but can't touch your host
+machine or read the files it has no business reading. Built and documented for
+Windows + WSL; the config is plain Docker and runs anywhere.
 
 Clone it, point it at your project, and you have a fail-safe box in about ten minutes.
 
@@ -27,14 +28,11 @@ unreadable to the agent:
 
 ## Prerequisites
 
-- **Windows 10/11 with WSL 2** and an Ubuntu (or other Linux) distro — `wsl --install`, then confirm with `wsl -l -v`.
-- **Docker Desktop for Windows** with the **WSL 2 backend** (modern installers default to it; confirm under *Settings → General → "Use WSL 2 based engine"*), and **WSL integration enabled** for your distro (*Settings → Resources → WSL Integration*).
-- **VS Code** + the **Dev Containers** extension (`ms-vscode-remote.remote-containers`). The repo auto-installs the **Claude Code** extension inside the container.
-- Keep the project on the **WSL filesystem** (`~/...`), not under `/mnt/c` — Windows-mounted paths are slower and cause file-watching and permission quirks.
+**Windows 10/11 + WSL 2 (Ubuntu), Docker Desktop (WSL 2 backend, integration on), and VS Code + the Dev Containers extension.** The Claude Code extension is auto-installed inside the container. Keep the project on the WSL filesystem (`~/...`), not `/mnt/c`.
 
-New to the Windows + WSL + Docker Desktop setup? The full first-time walkthrough is in **[SETUP.md](SETUP.md)**.
+First time with this stack? **[SETUP.md](SETUP.md)** is the full walkthrough (install, the WSL "open from WSL / `docker ps` just works" gotchas, troubleshooting).
 
-> **Two WSL gotchas worth knowing.** (1) Open the project *from WSL* — run `code .` in the WSL shell and check the corner reads `WSL: Ubuntu`; it's the recommended path for speed and correct path handling. (2) With Docker Desktop running, `docker ps` should just work in WSL — you do **not** start `dockerd` manually. (systemd is fine to leave on; if integration misbehaves, update WSL + Docker Desktop first — see SETUP.md.)
+> **Built for Windows + WSL.** On macOS or native Linux you don't need WSL, and the host/daemon details differ — but the part that matters travels unchanged: the `Dockerfile`, `.devcontainer/devcontainer.json`, and `.claude/` rules are plain Docker + Claude Code config. Run them with Docker Desktop (mac) or Docker Engine (Linux) and skip the WSL-specific notes.
 
 ## Quickstart
 
@@ -76,27 +74,11 @@ The audit hook (`.claude/hooks/audit.py`) logs every Bash command the agent runs
 
 ## Where it leaks (read this)
 
-This is a **blast-radius reducer for a trusted-but-fallible agent, not a VM.** Be
-honest about the limits before you rely on it:
-
-- The container **shares the host kernel** — a kernel exploit can cross it. Not for
-  genuinely untrusted or adversarial code; use a VM for that.
-- The **mounted folders are real host data** (read-write), not throwaway copies.
-- The **network is open** — this controls what the agent can touch on your machine,
-  not what it can send out. For exfiltration concerns, add `--network none` or an
-  egress allowlist.
-- The permission rules **match patterns**, so a determined bypass exists (which is
-  why the soft-layer contract asks the agent not to look for one).
+This is a **blast-radius reducer for a trusted-but-fallible agent, not a VM** — don't run genuinely untrusted or adversarial code in it. The short version: shared host kernel, read-write host mounts, open network, and pattern-based (so not airtight) permission rules. The article walks through each limit and why it's an acceptable trade for this threat model — read it before you rely on this.
 
 ## Production variant
 
-The minimal image above is the teaching baseline. A scientific-computing build adds
-Miniconda, Node, and a compiler/render toolchain, and runs `/tmp` with `exec` (native
-wheels and conda post-link scripts execute from scratch). See the article's appendix
-for that Dockerfile and `devcontainer.json`. Note: if you start the container as root
-with an entrypoint that fixes ownership and drops privileges, that's the one case
-where you add back a few capabilities (`SETUID`/`SETGID`/`CHOWN`/`FOWNER`/`DAC_OVERRIDE`);
-under the non-root start used here, `--cap-drop=ALL` alone is the whole story.
+This image is the minimal baseline. A heavier scientific-computing build (Miniconda, Node, compilers; `exec` scratch for native wheels) and the one case where you'd re-add a few capabilities (a root entrypoint that drops privileges — under the non-root start here, `--cap-drop=ALL` alone is the whole story) are covered in the article's appendix.
 
 ## License
 
