@@ -32,7 +32,7 @@ unreadable to the agent:
 
 First time with this stack? **[SETUP.md](SETUP.md)** is the full walkthrough (install, the WSL "open from WSL / `docker ps` just works" gotchas, troubleshooting).
 
-> **Built for Windows + WSL.** On macOS or native Linux you don't need WSL, and the host/daemon details differ — but the part that matters travels unchanged: the `Dockerfile`, `.devcontainer/devcontainer.json`, and `.claude/` rules are plain Docker + Claude Code config. Run them with Docker Desktop (mac) or Docker Engine (Linux) and skip the WSL-specific notes.
+> **Built for Windows + WSL.** On macOS or native Linux you don't need WSL — run Docker Desktop (mac) or Docker Engine (Linux) and skip the WSL notes. The rest is unchanged: the `Dockerfile`, `.devcontainer/devcontainer.json`, and `.claude/` rules are plain Docker + Claude Code config, and the Claude Code extension with browser/subscription sign-in (no API key) works the same in VS Code on all three platforms.
 
 ## Quickstart
 

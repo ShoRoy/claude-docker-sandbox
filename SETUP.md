@@ -206,11 +206,15 @@ touch /workspace/_it_works.txt
 
 ## Using Claude in the box
 
-Talk to the agent through the **Claude Code extension** (auto-installed in the container),
-signed in with your Claude account. You do **not** need an API key or the Claude CLI for
-this workflow — and there's a small reason not to add them casually: a static
-`ANTHROPIC_API_KEY` is a long-lived secret, and the CLI authenticates separately from the
-extension. Add either only if you specifically want CLI-based or API-based usage.
+Talk to the agent through the **Claude Code extension** (auto-installed in the container).
+On first use it opens a browser sign-in; authenticate with your Claude subscription
+(Pro/Max/Team) — **no API key required.** This works the same in VS Code on Windows, macOS,
+and Linux.
+
+> **Leave `ANTHROPIC_API_KEY` unset.** If that environment variable is present, Claude Code
+> uses the **API key instead of your subscription** — which bills per-token API usage rather
+> than your plan. Only set it (or install the Claude CLI, which authenticates separately) if
+> you specifically want API/CLI-based usage.
 
 ---
 
