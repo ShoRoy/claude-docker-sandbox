@@ -25,6 +25,17 @@ unreadable to the agent:
 | **Semi-hard** | `.claude/settings.json` | Claude Code's permission engine |
 | **Soft** | `CLAUDE.md` (your project) | the model's own compliance |
 
+## Prerequisites
+
+- **Windows 10/11 with WSL 2** and an Ubuntu (or other Linux) distro — `wsl --install`, then confirm with `wsl -l -v`.
+- **Docker Desktop for Windows** with the **WSL 2 backend** (modern installers default to it; confirm under *Settings → General → "Use WSL 2 based engine"*), and **WSL integration enabled** for your distro (*Settings → Resources → WSL Integration*).
+- **VS Code** + the **Dev Containers** extension (`ms-vscode-remote.remote-containers`). The repo auto-installs the **Claude Code** extension inside the container.
+- Keep the project on the **WSL filesystem** (`~/...`), not under `/mnt/c` — Windows-mounted paths are slower and cause file-watching and permission quirks.
+
+New to the Windows + WSL + Docker Desktop setup? The full first-time walkthrough is in **[SETUP.md](SETUP.md)**.
+
+> **Two WSL gotchas worth knowing.** (1) Open the project *from WSL* — run `code .` in the WSL shell and check the corner reads `WSL: Ubuntu`; it's the recommended path for speed and correct path handling. (2) With Docker Desktop running, `docker ps` should just work in WSL — you do **not** start `dockerd` manually. (systemd is fine to leave on; if integration misbehaves, update WSL + Docker Desktop first — see SETUP.md.)
+
 ## Quickstart
 
 ```bash
