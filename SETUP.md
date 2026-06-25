@@ -18,20 +18,20 @@ If you already run Docker Desktop + WSL + VS Code, skip to the [README quickstar
 ```
 Windows
 ├── Docker Desktop        → manages the Docker daemon
-├── VS Code               → editor; attaches to the container
+├── VS Code               → the IDE; attaches to the container
 │   ├── Dev Containers extension
 │   └── Claude Code extension   (auto-installed inside the container)
 └── WSL 2 (Ubuntu)        → the Linux host the container runs on
     └── ~/claude-docker-sandbox   (this repo, cloned here)
         ├── Dockerfile
         ├── .devcontainer/devcontainer.json
-        ├── .claude/                (settings.json + hooks/audit.py)
+        ├── .claude/                (settings.json + generate_deny_rules.py + hooks/audit.py)
         ├── workspace/              ← your project (you create this)
         └── config/                 ← the container's home (you create this)
 ```
 
 The division of labor: **Docker Desktop** runs the daemon, **WSL** is the Linux host,
-the **dev container** is the isolated execution environment, **VS Code** is the editor
+the **dev container** is the isolated execution environment, **VS Code** is the IDE
 that attaches to it, and the **Claude Code extension** is how you talk to the agent.
 
 ---
@@ -138,12 +138,19 @@ sanity check of the layout:
 
 ```bash
 ls -A
-# .claude  .devcontainer  .gitignore  CHANGELOG.md  config  Dockerfile  LICENSE  README.md  SETUP.md  workspace
+# .claude  .devcontainer  .git  .gitignore  CHANGELOG.md  config  Dockerfile  LICENSE  README.md  SETUP.md  workspace
 ```
 
-Before you open it, edit `.claude/settings.json` — swap the example restricted paths
-(`/workspace/project/restricted/**`, `params/sensitive_values.conf`) for the files in
-*your* tree the agent must not read. (See the README's "Edit these for your project.")
+Before you open it, point the deny rules at *your* restricted files. The deny list is
+generated, so don't hand-edit `settings.json` (it's hundreds of rules) — instead edit the
+`RESTRICTED_FOLDERS` / `RESTRICTED_FILES` lists at the top of
+`.claude/generate_deny_rules.py` and regenerate:
+
+```bash
+python3 .claude/generate_deny_rules.py --write
+```
+
+(See the README's "Edit these for your project" for what each layer does.)
 
 ---
 
@@ -248,7 +255,7 @@ The setup is correct when:
 
 - **Why it's built this way** (threat model, the three layers, where it leaks): the article
   linked from the [README](README.md).
-- **A heavier scientific-computing image** (Miniconda, Node, compilers; `exec` scratch):
-  see the README's [Production variant](README.md#production-variant).
+- **Adapting it for a heavier toolchain** (Miniconda, Node, compilers; why you'd run
+  `/tmp` as `exec`): see the README's [Production notes](README.md#production-notes).
 - **Tightening the permission rules** for your own restricted files: the README's
   "Edit these for your project," and the article for the full tiered-deny reasoning.

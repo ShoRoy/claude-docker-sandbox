@@ -58,11 +58,16 @@ docker run --rm -it \
 
 ## Edit these for your project
 
-1. **`.claude/settings.json`** — replace the example paths
-   (`/workspace/project/restricted/**`, `params/sensitive_values.conf`) with the
-   files in *your* tree that the agent must not read. `deny` beats `allow`, so the
-   build still compiles them (a child `gfortran`/`gcc` reads them as you) while the
-   agent's own `cat`/`Read` is refused.
+1. **`.claude/settings.json`** — the full tiered deny template (tool-level → Bash
+   readers → writers/movers → archive/exfil → scripting interpreters) for two example
+   targets. It's *generated*, so don't hand-edit it — edit the `RESTRICTED_FOLDERS` /
+   `RESTRICTED_FILES` lists at the top of **`.claude/generate_deny_rules.py`** (set them
+   to the files in *your* tree the agent must not read) and run
+   `python3 .claude/generate_deny_rules.py --write`. `deny` beats `allow`, so the build
+   still compiles those files (a child `gfortran`/`gcc` reads them as you) while the
+   agent's own `cat`/`Read` is refused. It's pattern-based, so extend the tool lists as
+   your paths need — and lean on the container (Layer 1) + `CLAUDE.md` (Layer 3) for what
+   patterns can't catch.
 2. **`.devcontainer/devcontainer.json`** — adjust the `mounts` to expose only what
    the agent should touch; mark read-only trees with `,readonly`.
 3. **`CLAUDE.md`** (create in your project) — the behavioral contract: list the
@@ -76,9 +81,12 @@ The audit hook (`.claude/hooks/audit.py`) logs every Bash command the agent runs
 
 This is a **blast-radius reducer for a trusted-but-fallible agent, not a VM** — don't run genuinely untrusted or adversarial code in it. The short version: shared host kernel, read-write host mounts, open network, and pattern-based (so not airtight) permission rules. The article walks through each limit and why it's an acceptable trade for this threat model — read it before you rely on this.
 
-## Production variant
+## Production notes
 
-This image is the minimal baseline. A heavier scientific-computing build (Miniconda, Node, compilers; `exec` scratch for native wheels) and the one case where you'd re-add a few capabilities (a root entrypoint that drops privileges — under the non-root start here, `--cap-drop=ALL` alone is the whole story) are covered in the article's appendix.
+This image is a deliberately minimal baseline: enough to run the agent and a basic build, no more. For real work you add your own toolchain (Miniconda, Node, compilers) on top. Two things are worth knowing when you do:
+
+- **Native wheels and conda want an `exec` `/tmp`.** The hardened config mounts `/tmp` as `noexec`, which blocks `pip` from building native extensions and conda from running post-link scripts. If your stack needs them, drop `noexec` from the `/tmp` line in `.devcontainer/devcontainer.json`; it's a scoped, deliberate loosening. (The article's *"Where my personal in-use image differs"* walks through the trade.)
+- **Capabilities only come back with a root entrypoint.** This image starts non-root, so `--cap-drop=ALL` is the whole story. Only if you switch to a root entrypoint (to fix mount ownership, then drop privileges) would you add back a minimal set: `SETUID`, `SETGID`, `CHOWN`, `FOWNER`, `DAC_OVERRIDE`.
 
 ## License
 

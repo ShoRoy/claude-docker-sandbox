@@ -2,15 +2,16 @@
 # A small, non-root Linux box for running an AI coding agent (Claude Code) under
 # Docker Dev Containers on WSL. Hardening lives in .devcontainer/devcontainer.json.
 #
-# This is the MINIMAL teaching baseline. For the scientific-toolchain version
-# (Miniconda, Node, build tools) see README.md → "Production variant".
+# This is a deliberately minimal baseline. For real work, add your own toolchain
+# (Miniconda, Node, compilers) on top; see README.md -> "Production notes" (incl.
+# why a native-wheel stack wants /tmp as exec).
 FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive \
     LANG=C.UTF-8 LC_ALL=C.UTF-8
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates curl git \
+    ca-certificates curl git python3 \
     build-essential \
  && rm -rf /var/lib/apt/lists/*
 
