@@ -2,6 +2,16 @@
 
 All notable changes to claude-docker-sandbox.
 
+## [v1.1] — 2026-07-01
+- Closed a residual-hole class the pattern matcher missed — **encoders** (`base64`,
+  `base32`, `basenc`, `uuencode`, which emit a restricted file's bytes to stdout =
+  read-exfil) and **archiver/compressor variants** (`bsdtar`, `gtar`, `star`,
+  `bsdcpio`, `ar`, `lz4`, `lzop`, `pigz`, `pbzip2`). Added to
+  `generate_deny_rules.py`; `settings.json` regenerated (488 → 540 rules).
+- Lesson baked in: a pattern deny list must enumerate every read **and** copy /
+  stage / encode verb — archivers and encoders are easy to miss. Layer 1 (the
+  container) and `CLAUDE.md` (Layer 3) still cover the unenumerable tail.
+
 ## [v1.0] — 2026-06-19
 - Initial release: minimal hardened Docker dev container for running Claude Code on WSL.
 - `Dockerfile` — non-root ubuntu:22.04 baseline (includes `python3` for the audit hook).
