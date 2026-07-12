@@ -8,7 +8,7 @@ Windows + WSL; the config is plain Docker and runs anywhere.
 Clone it, point it at your project, and you have a fail-safe box in about ten minutes.
 
 > Full write-up — the threat model and the reasoning behind every line:
-> **[Dockered Claude](https://shoroy.medium.com/dockered-claude-giving-an-ai-agent-the-keys-to-my-code-without-giving-it-the-house-5e23a8f2a342)**.
+> **[Dockered Claude](https://levelup.gitconnected.com/dockered-claude-giving-an-ai-agent-the-keys-to-my-code-without-giving-it-the-house-5e23a8f2a342)**.
 
 ---
 
