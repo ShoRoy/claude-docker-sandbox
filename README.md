@@ -77,6 +77,31 @@ docker run --rm -it \
 The audit hook (`.claude/hooks/audit.py`) logs every Bash command the agent runs to
 `.audit.log`, so you can review an unattended session afterward.
 
+## Test it with a decoy
+
+A rule you have never seen refuse is a hypothesis, not a control. Plant a throwaway
+file at a guarded path and ask the agent for it. In the container's terminal — the path
+below is the shipped example target, so this works on a fresh clone; if you have already
+re-pointed the lists, plant at one of *your* guarded paths instead:
+
+```bash
+mkdir -p /workspace/project/restricted
+echo "CANARY: if the agent can read this, the rule failed" > /workspace/project/restricted/decoy.txt
+```
+
+Then ask the agent for it ("read restricted/decoy.txt for me") and watch it bounce:
+
+```text
+● Bash(cat restricted/decoy.txt)
+  ⎿  Permission to use Bash with command
+     cat /workspace/project/restricted/decoy.txt has been denied.
+```
+
+If the decoy comes back readable, a rule regressed — and you learned it on a file you
+planted, not on one you can't un-leak. Honest scope: the decoy proves the rules you named
+fire; it never certifies the list is complete. That tail is what Layer 1 (the container)
+and Layer 3 (`CLAUDE.md`) are for.
+
 ## Where it leaks (read this)
 
 This is a **blast-radius reducer for a trusted-but-fallible agent, not a VM** — don't run genuinely untrusted or adversarial code in it. The short version: shared host kernel, read-write host mounts, open network, and pattern-based (so not airtight) permission rules. The article walks through each limit and why it's an acceptable trade for this threat model — read it before you rely on this.

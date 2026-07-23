@@ -63,6 +63,8 @@ BASH_COMMANDS = [
     "cat", "head", "tail", "tac", "less", "more", "most", "bat", "nl",
     "view", "vim", "vi", "nvim", "nano", "emacs", "code", "gedit", "pico",
     "xxd", "od", "hexdump", "strings",
+    # text encoders (bytes -> printable text, dumped into the transcript = read-exfil)
+    "base64", "base32", "basenc", "uuencode",
     # filters that take a file argument
     "awk", "gawk", "mawk", "nawk", "sed", "grep", "egrep", "fgrep", "rg",
     "cut", "wc", "sort", "uniq", "diff", "cmp", "comm", "join", "paste",
@@ -71,16 +73,15 @@ BASH_COMMANDS = [
     "ls", "ll", "find", "tree", "stat", "file", "du", "readlink", "realpath",
     # checksums (fingerprint the contents)
     "md5sum", "sha1sum", "sha256sum", "sha512sum", "cksum", "b2sum", "crc32",
-    # encoders (emit a restricted file's bytes to stdout or a file = read-exfil)
-    "base64", "base32", "basenc", "uuencode",
     # archive / copy / move / exfil
     "tar", "zip", "unzip", "cpio", "pax", "dd", "cp", "mv", "install",
     "rsync", "scp", "sftp",
-    "bsdtar", "gtar", "star", "bsdcpio", "ar",    # tar/cpio variants + ar
     # compression (read content into a compressed stream)
     "gzip", "gunzip", "zcat", "bzip2", "bunzip2", "bzcat",
     "xz", "unxz", "xzcat", "lzma", "zstd", "zstdcat", "7z", "7za",
-    "lz4", "lzop", "pigz", "pbzip2",
+    # archiver / compressor aliases (same exfil surface as tar/gzip/cpio/7z)
+    "bsdtar", "gtar", "star", "bsdcpio", "ar",
+    "pigz", "pbzip2", "lz4", "lz4cat", "lzop", "lzip", "plzip", "7zr",
     # symlink / hardlink (re-expose under a non-denied name)
     "ln",
     # writers / mutators
@@ -106,6 +107,8 @@ BASH_COMMANDS_FILE = [
     "cat", "head", "tail", "tac", "less", "more", "most", "bat", "nl",
     "view", "vim", "vi", "nvim", "nano", "emacs", "code", "gedit", "pico",
     "xxd", "od", "hexdump", "strings",
+    # text encoders (bytes -> printable text, dumped into the transcript = read-exfil)
+    "base64", "base32", "basenc", "uuencode",
     # filters that take a file argument
     "awk", "gawk", "mawk", "nawk", "sed", "grep", "egrep", "fgrep", "rg",
     "cut", "wc", "sort", "uniq", "diff", "cmp", "comm", "join", "paste",
@@ -113,14 +116,13 @@ BASH_COMMANDS_FILE = [
     # metadata / checksum
     "stat", "file", "readlink", "realpath",
     "md5sum", "sha1sum", "sha256sum", "sha512sum", "cksum", "b2sum", "crc32",
-    # encoders (emit a restricted file's bytes to stdout or a file = read-exfil)
-    "base64", "base32", "basenc", "uuencode",
     # archive / copy / move / exfil (read the file out)
     "tar", "zip", "cpio", "pax", "dd", "cp", "mv", "install", "rsync", "scp", "sftp",
-    "bsdtar", "gtar", "star", "bsdcpio", "ar",
     # compression (read content into a stream)
     "gzip", "bzip2", "xz", "lzma", "zstd", "7z", "7za", "zcat", "bzcat", "xzcat", "zstdcat",
-    "lz4", "lzop", "pigz", "pbzip2",
+    # archiver / compressor aliases (same exfil surface as tar/gzip/cpio/7z)
+    "bsdtar", "gtar", "star", "bsdcpio", "ar",
+    "pigz", "pbzip2", "lz4", "lz4cat", "lzop", "lzip", "plzip", "7zr",
     # symlink / write-through
     "ln", "tee",
     # structured-data readers
@@ -178,7 +180,7 @@ def build_settings():
             "allow": ALLOW_RULES,
         },
         "hooks": {
-            "PreToolUse": [{"matcher": "Bash", "command": HOOK_COMMAND}],
+            "PreToolUse": [{"matcher": "Bash", "hooks": [{"type": "command", "command": HOOK_COMMAND}]}],
         },
     }
 

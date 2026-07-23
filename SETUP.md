@@ -205,6 +205,10 @@ touch /workspace/_it_works.txt
 # on the WSL host it's at ~/claude-docker-sandbox/workspace/_it_works.txt
 ```
 
+These checks prove the walls. To watch a *rule* work, run the decoy check from the
+README ("Test it with a decoy") — plant a canary at a guarded path and see the agent
+get refused.
+
 > **What persists:** `config/` is mounted as the container's home (`/home/claudeuser`),
 > so shell history, the VS Code server, and user-level config survive across rebuilds.
 > `workspace/` is your project. Everything else in the container is disposable.

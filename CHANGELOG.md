@@ -2,6 +2,18 @@
 
 All notable changes to claude-docker-sandbox.
 
+## [v1.2] — 2026-07-23
+- Ported the compressor aliases the v1.1 sweep missed (`lz4cat`, `lzip`, `plzip`,
+  `7zr`) into `generate_deny_rules.py`; `settings.json` regenerated (540 → 556 rules).
+  The generator now matches the article-audited verb list exactly.
+- **Fixed the audit hook wiring**: the generator emitted a flat
+  `{"matcher", "command"}` PreToolUse entry, which current Claude Code ignores; it now
+  emits the nested `{"matcher", "hooks": [{"type": "command", ...}]}` form, so
+  `.audit.log` actually records the agent's Bash commands as documented.
+- README: new **"Test it with a decoy"** section — plant a canary at a guarded path and
+  watch the rule refuse it (a rule you have never seen refuse is a hypothesis, not a
+  control). SETUP Step 7 cross-references it. Companion to the article's Part 2.
+
 ## [v1.1] — 2026-07-01
 - Closed a residual-hole class the pattern matcher missed — **encoders** (`base64`,
   `base32`, `basenc`, `uuencode`, which emit a restricted file's bytes to stdout =
