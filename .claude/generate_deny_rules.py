@@ -98,10 +98,10 @@ BASH_COMMANDS = [
     "sh", "bash", "zsh", "dash", "ksh", "fish",
 ]
 
-# Readers-only subset, applied to single-FILE targets. A lone file can't be the
-# target of dir/create commands (mkdir, rmdir, tree, ...), so those would be
-# dead rules — this drops them and keeps only commands that can read/move/expose
-# the file's contents.
+# Subset applied to single-FILE targets. A lone file can't be the target of
+# dir/create commands (mkdir, rmdir, tree, ...), so those would be dead rules —
+# this drops ONLY those, and keeps every command that can read, move, expose,
+# or mutate the file itself.
 BASH_COMMANDS_FILE = [
     # readers / pagers / viewers / editors (open-to-read)
     "cat", "head", "tail", "tac", "less", "more", "most", "bat", "nl",
@@ -113,18 +113,20 @@ BASH_COMMANDS_FILE = [
     "awk", "gawk", "mawk", "nawk", "sed", "grep", "egrep", "fgrep", "rg",
     "cut", "wc", "sort", "uniq", "diff", "cmp", "comm", "join", "paste",
     "tr", "expand", "unexpand", "column", "rev",
-    # metadata / checksum
-    "stat", "file", "readlink", "realpath",
+    # metadata / listing / checksum
+    "ls", "ll", "find", "du", "stat", "file", "readlink", "realpath",
     "md5sum", "sha1sum", "sha256sum", "sha512sum", "cksum", "b2sum", "crc32",
     # archive / copy / move / exfil (read the file out)
-    "tar", "zip", "cpio", "pax", "dd", "cp", "mv", "install", "rsync", "scp", "sftp",
+    "tar", "zip", "unzip", "cpio", "pax", "dd", "cp", "mv", "install", "rsync", "scp", "sftp",
     # compression (read content into a stream)
-    "gzip", "bzip2", "xz", "lzma", "zstd", "7z", "7za", "zcat", "bzcat", "xzcat", "zstdcat",
+    "gzip", "gunzip", "bzip2", "bunzip2", "xz", "unxz", "lzma", "zstd", "7z", "7za", "zcat", "bzcat", "xzcat", "zstdcat",
     # archiver / compressor aliases (same exfil surface as tar/gzip/cpio/7z)
     "bsdtar", "gtar", "star", "bsdcpio", "ar",
     "pigz", "pbzip2", "lz4", "lz4cat", "lzop", "lzip", "plzip", "7zr",
     # symlink / write-through
     "ln", "tee",
+    # writers / mutators (file-applicable)
+    "touch", "rm", "truncate", "chmod", "chown", "chgrp", "setfacl",
     # structured-data readers
     "jq", "yq", "xmllint", "xmlstarlet", "json_pp",
     # language interpreters (read via a one-liner or script)

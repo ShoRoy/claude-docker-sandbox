@@ -2,6 +2,14 @@
 
 All notable changes to claude-docker-sandbox.
 
+## [v1.3] — 2026-07-23
+- Folder-vs-file **symmetry sweep** on the deny lists: the single-FILE target list now
+  carries the decompress-readers (`gunzip`, `bunzip2`, `unxz`, `unzip`), the metadata /
+  listing verbs (`ls`, `ll`, `find`, `du`), and the file-applicable writers/mutators
+  (`touch`, `rm`, `truncate`, `chmod`, `chown`, `chgrp`, `setfacl`) that the folder list
+  already had. `settings.json` regenerated (556 → 586 rules). Only dir-only commands
+  (`mkdir`, `rmdir`, `tree`) remain deliberately dropped for file targets.
+
 ## [v1.2] — 2026-07-23
 - Ported the compressor aliases the v1.1 sweep missed (`lz4cat`, `lzip`, `plzip`,
   `7zr`) into `generate_deny_rules.py`; `settings.json` regenerated (540 → 556 rules).
