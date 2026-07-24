@@ -9,6 +9,9 @@ Clone it, point it at your project, and you have a fail-safe box in about ten mi
 
 > Full write-up — the threat model and the reasoning behind every line:
 > **[Dockered Claude](https://levelup.gitconnected.com/dockered-claude-giving-an-ai-agent-the-keys-to-my-code-without-giving-it-the-house-5e23a8f2a342)**.
+> Part 2 — the compilable-but-obscured rule, the decoy test, and what the platform's
+> native sandbox now covers: **[Dockered Claude: keeping research code compilable but
+> obscured from my AI agent](https://levelup.gitconnected.com/dockered-claude-keeping-research-code-compilable-but-obscured-from-my-ai-agent-c807d9ff7eb9)**.
 
 ---
 
